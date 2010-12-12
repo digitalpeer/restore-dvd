@@ -1,0 +1,93 @@
+#!/bin/sh
+
+freeze()
+{
+    echo
+    while true; do sleep 1; done
+}
+
+fail()
+{
+    echo "$@"
+
+    eject &>/dev/null
+
+    echo
+    echo "Remove DVD and reboot."
+    echo
+
+    freeze
+}
+
+start()
+{
+    sleep 1
+
+    clear
+
+    echo
+    echo ' _____  ______  _____ _______ ____  _____  ______   _______      _______  '
+    echo '|  __ \|  ____|/ ____|__   __/ __ \|  __ \|  ____| |  __ \ \    / /  __ \ '
+    echo '| |__) | |__  | (___    | | | |  | | |__) | |__    | |  | \ \  / /| |  | |'
+    echo '|  _  /|  __|  \___ \   | | | |  | |  _  /|  __|   | |  | |\ \/ / | |  | |'
+    echo '| | \ \| |____ ____) |  | | | |__| | | \ \| |____  | |__| | \  /  | |__| |'
+    echo '|_|  \_\______|_____/   |_|  \____/|_|  \_\______| |_____/   \/   |_____/ '
+    echo 
+
+    MOUNT_POINT=/tmp/cdrom
+    IMAGE=image.bz2
+
+    mkdir -p $MOUNT_POINT
+
+    echo -n "Do you want to restore your hard drive and delete saved data? (N/y):"
+    read ANSWER
+
+    [ -n "$ANSWER" ] || ANSWER=N
+
+    if [ "$ANSWER" == "y" ] || [ "$ANSWER" == "Y" ]
+    then
+
+	echo "Restoring hard disk image (this will take awhile) ..."
+
+	[ -e /dev/sda ] || fail "Disk not found."
+
+	mount /dev/cdrom $MOUNT_POINT || fail "Could not mount cdrom."
+
+	cat $MOUNT_POINT/image_* | bunzip2 -c > /dev/sda || fail "Could not write image to disk."
+	
+	umount $MOUNT_POINT
+
+	sync
+
+	eject &>/dev/null
+	
+	echo
+	echo "Restore complete.  Remove DVD and reboot computer."
+	echo
+
+	freeze
+    else
+
+	if [ "$ANSWER" == "a" ]
+	then
+	    exit 0
+	fi
+
+	fail "Restore aborted by user."
+    fi
+}
+
+case "$1" in
+  start)
+ 	start
+	;;
+  stop)
+	;;
+  restart|reload)
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit 0
