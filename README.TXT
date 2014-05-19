@@ -1,11 +1,11 @@
 Restore DVD
 ----------------------------------------
 This is a buildroot project that creates a Linux based bootable DVD containing a hard drive image 
-created by you.  With the resulting DVD, a user can can restore their hard drive using the image 
-on the DVD.  It provides a simple menu to the user to restore their PC.  
+created by you that can be used to restore a hard drive. It provides a simple menu to the user to
+restore their PC.  
 
-This is extremely useful to make backups of your own computers or to make it easy for somebody 
-less technical to restore their computer without bothering you.
+This is useful to make restore DVDs of your own computers or to make it easy for somebody less
+technical to restore their computer without bothering you.
 
 
 Before You Begin
@@ -52,13 +52,11 @@ Building the DVD
 Now that you have an image somewhere on the Linux PC where you'll build buildroot, perform the 
 following steps:
 
- 1. Create a symlink to the image in the buildroot folder.
+ 1. Create a symlink to the previously created image in the buildroot root folder.
     $ cd restore-dvd
     $ ln -s /tmp/image.bz2 image.bz2
-2. Copy the buildroot config file.
-    $ cp restore-dvd.config .config
-3. Build
-    $ make oldconfig
+ 2. Build
+    $ make restore_dvd_defconfig
     $ make
 
 The resulting ISO will be at output/images/rootfs.iso9660 and you can now burn that to a DVD.
